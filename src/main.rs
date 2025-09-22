@@ -98,29 +98,30 @@ impl Note {
             note_end = 2;
         }
 
-        if note_end >= string.len() {
-            return Err("No octave specified".to_string());
-        }
+        let (note_name, octave) = if note_end >= string.len() {
+            (string, 4)
+        } else {
+            let note_name = &string[..note_end];
+            let octave_str = &string[note_end..];
+            let octave = octave_str
+                .parse::<u8>()
+                .map_err(|_| format!("Invalid octave: {}", octave_str))?;
 
-        let note_name = &string[..note_end];
-        let octave_str = &string[note_end..];
-
-        let octave = octave_str
-            .parse::<u8>()
-            .map_err(|_| format!("Invalid octave: {}", octave_str))?;
+            (note_name, octave)
+        };
 
         let name = match note_name {
             "C" => NoteName::C,
-            "C#" => NoteName::CSharp,
+            "C#" | "Db" => NoteName::CSharp,
             "D" => NoteName::D,
-            "D#" => NoteName::DSharp,
+            "D#" | "Eb" => NoteName::DSharp,
             "E" => NoteName::E,
             "F" => NoteName::F,
-            "F#" => NoteName::FSharp,
+            "F#" | "Gb" => NoteName::FSharp,
             "G" => NoteName::G,
-            "G#" => NoteName::GSharp,
+            "G#" | "Ab" => NoteName::GSharp,
             "A" => NoteName::A,
-            "A#" => NoteName::ASharp,
+            "A#" | "Bb" => NoteName::ASharp,
             "B" => NoteName::B,
             _ => return Err(format!("Invalid note name: {}", note_name)),
         };
